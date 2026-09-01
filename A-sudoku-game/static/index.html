@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sudoku Game - Giai Sudoku thu cong hoac quan sat AI giai tu dong." />
+  <title>Sudoku Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-orb bg-orb--1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb--2" aria-hidden="true"></div>
+
+  <div class="app-shell">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar__brand">
+        <svg class="topbar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <h1 class="topbar__title">Sudoku</h1>
+      </div>
+
+      <div class="topbar__meta">
+        <span class="meta-chip" id="meta-id">---</span>
+        <span class="meta-chip meta-chip--diff" id="meta-diff">---</span>
+        <span class="meta-chip" id="meta-empty">— ô trống</span>
+        <span class="meta-chip meta-chip--conflict" id="meta-conflicts" hidden>0 Xung đột</span>
+      </div>
+
+      <div class="topbar__right">
+        <div id="game-status" class="status-chip status--playing" role="status" aria-live="polite">PLAYING</div>
+        <span id="api-dot" class="api-dot api-dot--on" title="Kết nối AI" aria-hidden="true"></span>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main-layout">
+
+      <!-- Board -->
+      <section class="board-wrap" aria-label="Bàn cờ Sudoku">
+        <div id="board" class="board" role="grid" aria-label="Sudoku 9x9"></div>
+        <p class="board-tip">Nhấn số 1–9 để điền &middot; Del để xóa</p>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+
+        <!-- Chọn độ khó -->
+        <div class="panel">
+          <p class="panel__label">Chọn độ khó</p>
+          <div class="diff-grid">
+            <button id="btn-easy"   class="diff-btn diff-btn--easy"   type="button">Easy</button>
+            <button id="btn-medium" class="diff-btn diff-btn--medium" type="button">Medium</button>
+            <button id="btn-hard"   class="diff-btn diff-btn--hard"   type="button">Hard</button>
+            <button id="btn-expert" class="diff-btn diff-btn--expert" type="button">Expert</button>
+          </div>
+          <div id="diff-msg" class="diff-msg" hidden></div>
+        </div>
+
+        <!-- Reset -->
+        <div class="panel">
+          <p class="panel__label">Bàn cờ</p>
+          <button id="btn-reset" class="action-btn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            Reset về đề bài
+          </button>
+        </div>
+
+        <!-- Chú thích -->
+        <div class="panel">
+          <p class="panel__label">Chú thích</p>
+          <ul class="legend">
+            <li class="legend__item"><span class="swatch swatch--fixed"></span>Ô đề bài</li>
+            <li class="legend__item"><span class="swatch swatch--edit"></span>Ô điền vào</li>
+            <li class="legend__item"><span class="swatch swatch--conflict"></span>Xung đột</li>
+          </ul>
+        </div>
+
+      </aside>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
