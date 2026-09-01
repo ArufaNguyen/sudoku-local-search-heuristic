@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sudoku Auto Solver - Quan sat AI giai Sudoku buoc tung tick." />
+  <title>Sudoku Solver — Program B</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="bg-orb bg-orb--1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb--2" aria-hidden="true"></div>
+
+  <div class="app-shell">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar__brand">
+        <svg class="topbar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+          <path d="m4.93 4.93 2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <h1 class="topbar__title">AI Solver</h1>
+      </div>
+
+      <div class="topbar__meta">
+        <span class="meta-chip meta-chip--algo" id="meta-algo">—</span>
+        <span class="meta-chip" id="meta-tick">Tick —</span>
+        <span class="meta-chip meta-chip--phase" id="meta-phase">—</span>
+      </div>
+
+      <div class="topbar__right">
+        <div id="board-status-badge" class="status-chip status--playing" role="status" aria-live="polite">READY</div>
+        <span id="api-dot" class="api-dot api-dot--on" title="Ket noi" aria-hidden="true"></span>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main-layout">
+
+      <!-- Board -->
+      <section class="board-wrap" aria-label="Bàn cờ Sudoku">
+        <div id="board-grid" class="board" role="grid" aria-label="Sudoku 9x9"></div>
+        <div id="tick-desc" class="tick-desc"></div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+
+        <!-- Thuật toán + toc do -->
+        <div class="panel">
+          <p class="panel__label">Thuật toán</p>
+          <select id="algo-select" class="sel">
+            <option value="backtracking">Backtracking</option>
+            <option value="mrv">MRV (Minimum Remaining Values)</option>
+            <option value="min_conflicts">Min-Conflicts (Local Search)</option>
+          </select>
+          <p class="panel__label" style="margin-top:0.6rem">Tốc độ Auto</p>
+          <select id="speed-select" class="sel">
+            <option value="1">1 tick/s — Chậm</option>
+            <option value="3" selected>3 tick/s — Trung bình</option>
+            <option value="10">10 tick/s — Nhanh</option>
+            <option value="30">30 tick/s — Rất nhanh</option>
+          </select>
+        </div>
+
+        <!-- Điều khiển -->
+        <div class="panel">
+          <p class="panel__label">Điều khiển</p>
+          <button id="btn-prepare" class="ctrl-btn ctrl-btn--prepare" type="button">Prepare</button>
+          <div class="ctrl-row">
+            <button id="btn-prev" class="ctrl-btn ctrl-btn--nav" type="button" disabled>Prev</button>
+            <button id="btn-next" class="ctrl-btn ctrl-btn--nav" type="button" disabled>Next</button>
+          </div>
+          <div class="ctrl-row">
+            <button id="btn-auto"  class="ctrl-btn ctrl-btn--auto"  type="button" disabled>Auto</button>
+            <button id="btn-pause" class="ctrl-btn ctrl-btn--pause" type="button" disabled>Pause</button>
+          </div>
+          <button id="btn-reset" class="ctrl-btn ctrl-btn--reset" type="button" disabled>Reset</button>
+          <div id="status-bar" class="status-bar">
+            <span id="status-text">Chua co session. Nhan Prepare de bat dau.</span>
+          </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="panel panel--metrics">
+          <p class="panel__label">Metrics</p>
+          <dl class="metrics-list">
+            <div class="m-row"><dt>Nodes</dt>   <dd id="m-nodes">—</dd></div>
+            <div class="m-row"><dt>Backtracks</dt><dd id="m-bt">—</dd></div>
+            <div class="m-row"><dt>Max depth</dt><dd id="m-depth">—</dd></div>
+            <div class="m-row"><dt>Iterations</dt><dd id="m-iter">—</dd></div>
+            <div class="m-row"><dt>Restarts</dt>  <dd id="m-restart">—</dd></div>
+            <div class="m-row"><dt>Moves</dt>     <dd id="m-moves">—</dd></div>
+            <div class="m-row"><dt>Conflicts</dt> <dd id="m-conf">—</dd></div>
+            <div class="m-row"><dt>Time (ms)</dt> <dd id="m-ms">—</dd></div>
+          </dl>
+        </div>
+
+        <!-- Chú thích -->
+        <div class="panel">
+          <p class="panel__label">Chú thích</p>
+          <ul class="legend">
+            <li class="legend__item"><span class="swatch swatch--fixed"></span>Ô đề bài</li>
+            <li class="legend__item"><span class="swatch swatch--current"></span>Đang xét</li>
+            <li class="legend__item"><span class="swatch swatch--backtrack"></span>Backtrack</li>
+            <li class="legend__item"><span class="swatch swatch--solved"></span>Đã giải</li>
+          </ul>
+        </div>
+
+      </aside>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

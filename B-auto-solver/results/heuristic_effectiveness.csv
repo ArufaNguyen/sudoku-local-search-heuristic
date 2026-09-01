@@ -1,0 +1,5 @@
+difficulty,bt_mean_nodes,mrv_mean_nodes,node_reduction_pct,bt_mean_ms,mrv_mean_ms,ms_reduction_pct
+easy,63.1,35,44.53,0.941,4.047,-330.07
+medium,207.4,43.2,79.17,2.796,4.691,-67.78
+hard,1355.9,51.3,96.22,14.861,6.304,57.58
+expert,32101.4,151.7,99.53,364.744,25.726,92.95

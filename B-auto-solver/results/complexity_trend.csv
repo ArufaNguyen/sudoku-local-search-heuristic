@@ -1,0 +1,5 @@
+difficulty,empty_count,clue_count,bt_mean_nodes,mrv_mean_nodes,mc_mean_iterations,bt_mean_ms,mrv_mean_ms,mc_mean_ms,mc_success_rate
+easy,35,46,63.1,35,146.2,0.941,4.047,233.907,1.0
+medium,43,38,207.4,43.2,293.6,2.796,4.691,469.889,1.0
+hard,49,32,1355.9,51.3,1457.9,14.861,6.304,2497.173,1.0
+expert,54,27,32101.4,151.7,7198.6,364.744,25.726,13846.242,0.99

@@ -1,0 +1,13 @@
+difficulty,algorithm,mean_ms,median_ms,std_ms,success_rate,mean_iterations,mean_restarts,mean_moves
+easy,backtracking,0.941,0.816,0.351,1.0,0,0,0
+easy,mrv,4.047,4.187,0.382,1.0,0,0,0
+easy,min_conflicts,233.907,69.524,577.518,1.0,146.2,0.08,145.8
+medium,backtracking,2.796,1.545,2.539,1.0,0,0,0
+medium,mrv,4.691,4.599,1.304,1.0,0,0,0
+medium,min_conflicts,469.889,209.051,706.982,1.0,293.6,0.11,291.6
+hard,backtracking,14.861,8.174,14.007,1.0,0,0,0
+hard,mrv,6.304,6.064,0.577,1.0,0,0,0
+hard,min_conflicts,2497.173,1478.754,3395.356,1.0,1457.9,1.12,1457.9
+expert,backtracking,364.744,113.82,571.748,1.0,0,0,0
+expert,mrv,25.726,22.554,15.802,1.0,0,0,0
+expert,min_conflicts,13846.242,7073.635,18584.238,0.99,7198.6,6.68,7198.6
