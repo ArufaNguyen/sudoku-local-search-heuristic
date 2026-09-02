@@ -1,0 +1,58 @@
+TY  - BOOK
+AU  - Russell, Stuart J.
+AU  - Norvig, Peter
+TI  - Artificial Intelligence: A Modern Approach
+ET  - 4th
+PB  - Pearson
+PY  - 2021
+SN  - 9781292401133
+ER  -
+
+TY  - JOUR
+AU  - Haralick, Robert M.
+AU  - Elliott, Gordon L.
+TI  - Increasing tree search efficiency for constraint satisfaction problems
+JO  - Artificial Intelligence
+VL  - 14
+IS  - 3
+SP  - 263
+EP  - 313
+PY  - 1980
+DO  - 10.1016/0004-3702(80)90051-X
+ER  -
+
+TY  - JOUR
+AU  - Minton, Steven
+AU  - Johnston, Mark D.
+AU  - Philips, Andrew B.
+AU  - Laird, Philip
+TI  - Minimizing conflicts: A heuristic repair method for constraint satisfaction and scheduling problems
+JO  - Artificial Intelligence
+VL  - 58
+IS  - 1-3
+SP  - 161
+EP  - 205
+PY  - 1992
+DO  - 10.1016/0004-3702(92)90007-K
+ER  -
+
+TY  - ELEC
+AU  - Norvig, Peter
+TI  - Solving Every Sudoku Puzzle
+PY  - 2006
+UR  - https://www.norvig.com/sudoku.html
+Y2  - 2026/09/02
+ER  -
+
+TY  - JOUR
+AU  - Yato, Takayuki
+AU  - Seta, Takahiro
+TI  - Complexity and Completeness of Finding Another Solution and Its Application to Puzzles
+JO  - IEICE Transactions on Fundamentals of Electronics, Communications and Computer Sciences
+VL  - E86-A
+IS  - 5
+SP  - 1052
+EP  - 1060
+PY  - 2003
+UR  - https://search.ieice.org/bin/summary.php?id=e86-a_5_1052
+ER  -
