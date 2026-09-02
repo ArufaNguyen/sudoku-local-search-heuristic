@@ -1,0 +1,29 @@
+# Python generated files
+__pycache__/
+*.py[cod]
+tests/
+
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+
+# Editor, OS, and temporary Office files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+~$*
+
+# Local AI/developer tooling
+.claude/
+.codex*/
+.gitnexus/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
+# EndNote working database (keep the portable RIS export in Git)
+C-Docx/EndNote/*.enl
+C-Docx/EndNote/*.Data/
