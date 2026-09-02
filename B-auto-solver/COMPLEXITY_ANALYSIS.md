@@ -57,7 +57,7 @@
 - **Độ phức tạp mỗi vòng lặp (Per-Iteration Time Complexity):**
   - Khởi tạo hoán vị theo hàng: $O(N^2) = O(81)$ thao tác.
   - Tìm các ô có xung đột: $O(N^2) = O(81)$.
-  - Đánh giá các phép hoán đổi cùng hàng: Có tối đa $O(N)$ ô editable cùng hàng, mỗi phép hoán đổi tốn $O(N)$ để tính toán lại xung đột cột và khối 3×3 $\rightarrow$ Chi phí mỗi vòng lặp là $O(N^3) = O(729)$.
+  - Đánh giá các phép hoán đổi cùng hàng: Có tối đa $O(N)$ ô editable cùng hàng. Implementation hiện gọi `count_conflicts()` quét toàn board với chi phí $O(N^2)$ cho mỗi phép thử, nên chi phí mỗi vòng lặp là $O(N^3) = O(729)$.
 - **Tổng chi phí thời gian theo ngân sách (Budget Time Complexity):**
   $$T_{\text{MC-budget}} = O\big((R + 1) \times I \times N^3\big)$$
   Với $R = 50, I = 1,000, N = 9 \rightarrow$ Ngân sách tối đa khoảng $3.7 \times 10^7$ phép toán cơ bản.
@@ -123,16 +123,16 @@ Easy   : [BT: 63.1 nodes]     ►
 | **Hard** | 100 | 100 | 0 | **100.0%** | 1,457.9 | 1.12 |
 | **Expert** | 100 | 99 | 1 | **99.0%** | 7,198.6 | 6.68 |
 
-#### Bằng chứng Thực Nghiệm về Tính Không Đầy Đủ (Incompleteness):
+#### Minh họa Thực Nghiệm cho Tính Không Đầy Đủ (Incompleteness):
 - Tại mức **Expert**, trong lượt chạy với **Puzzle ID 32** (seed = 5):
   - Thuật toán đã thực hiện đủ **51,000 iterations** (1,000 iterations $\times$ 50 restarts) mà vẫn chưa giải quyết hết xung đột cuối cùng.
   - Sau 91,837.8 ms (~91.8 giây), thuật toán dừng với lý do `budget_exhausted`.
-- **Kết luận:** Đây là minh chứng thực nghiệm xác thực rằng Local Search không bảo đảm tìm ra nghiệm trên các bài toán có không gian ràng buộc quá chặt chẽ (tightly-constrained CSPs).
+- **Kết luận:** Lượt failure này minh họa hệ quả của tính incomplete và độ nhạy seed trong budget đã chọn. Nó không chứng minh puzzle vô nghiệm; cùng puzzle có thể được giải ở seed hoặc cấu hình khác.
 
 ---
 
 ## 4. Kết Luận Tổng Hợp So Sánh
 
-1. **Backtracking:** Thích hợp nhất cho bài toán nhỏ và dễ ($m \le 43$) nhờ chi phí mỗi bước cực nhẹ, nhưng không có khả năng mở rộng (non-scalable) cho bài toán khó.
+1. **Backtracking:** Thích hợp nhất cho các puzzle Easy/Medium trong dataset này nhờ chi phí mỗi bước nhẹ; số node và runtime tăng nhanh ở Hard/Expert nên khả năng mở rộng kém hơn MRV trong thực nghiệm hiện tại.
 2. **Backtracking + MRV:** Là giải pháp cân bằng và mạnh mẽ nhất cho CSP. Heuristic Fail-First giúp kiểm soát triệt để sự bùng nổ tổ hợp trên bài toán khó.
 3. **Min-Conflicts:** Khả thi trên các bài toán Sudoku từ Easy đến Hard, nhưng có độ biến thiên thời gian (variance) rất lớn và không bảo đảm tìm ra nghiệm trên bài toán Expert.

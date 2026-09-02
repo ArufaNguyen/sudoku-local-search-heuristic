@@ -17,7 +17,7 @@
 | **Bộ dữ liệu (Dataset)** | 40 puzzle độc lập | 10 Easy (46 clues), 10 Medium (38 clues), 10 Hard (32 clues), 10 Expert (27 clues) |
 | **BT / MRV Lượt chạy** | 3 lượt / puzzle | Loại bỏ nhiễu hệ điều hành, lấy trung bình thời gian thực thi |
 | **Min-Conflicts Lượt chạy** | 10 seeds / puzzle | Đánh giá phân phối xác suất và độ nhạy của khởi tạo ngẫu nhiên ($seeds \in [0..9]$) |
-| **BT / MRV Safety Node Limit** | 2,000,000 nodes | Ngăn tràn bộ nhớ nếu thuật toán rơi vào không gian vô hạn |
+| **BT / MRV Safety Node Limit** | 2,000,000 nodes | Chặn thời gian chạy và lượng tick/bộ nhớ quá lớn trên cây tìm kiếm hữu hạn nhưng có thể bùng nổ |
 | **Min-Conflicts Max Iterations** | 1,000 iterations | Giới hạn số vòng lặp tối ưu cục bộ trong mỗi lần thử |
 | **Min-Conflicts Max Restarts** | 50 restarts | Giới hạn số lần khởi động lại ngẫu nhiên khi gặp cực tiểu cục bộ |
 
@@ -78,7 +78,7 @@
 
 ## 5. Danh Mục Biểu Đồ Trực Quan Hóa (Charts Artifacts)
 
-Bộ 3 biểu đồ chuẩn được sinh tự động bởi `benchmark.py`, lưu tại thư mục `B-auto-solver/results/charts/`:
+Bộ 3 biểu đồ chuẩn được sinh tự động bởi nhánh Matplotlib của `benchmark.py` khi thư viện sẵn có, lưu tại `B-auto-solver/results/charts/`. Ba ảnh hiện tại đã được tái sinh bằng Matplotlib 3.11.1 từ `results_summary.csv` ngày 01/09/2026:
 
 | Tên Biểu Đồ | File Đường Dẫn | Nội Dung Phân Tích |
 |---|---|---|

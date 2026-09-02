@@ -48,7 +48,7 @@ Program B là module **giải và trực quan hoá** thuật toán Sudoku, chạ
 ### 3.1. Thuật toán 1: Backtracking (Exact Search — Baseline)
 
 - **Nguyên lý:** Tìm kiếm theo chiều sâu (Depth-First Search - DFS) đệ quy. Duyệt tìm ô trống đầu tiên theo thứ tự quét hàng-cột (row-major order), dùng `candidates()` để lọc các giá trị hợp lệ $1..9$, thử từng giá trị và quay lui (backtrack) khi gặp ngõ cụt.
-- **Điều kiện dừng an toàn:** `max_nodes = 2,000,000` (ở chế độ benchmark) hoặc `100,000` (ở chế độ visualizer).
+- **Điều kiện dừng an toàn:** `max_nodes = 2,000,000` ở benchmark; lời gọi visualizer dùng mặc định `200,000` nếu request `/api/prepare` không truyền `max_nodes`.
 - **Phân loại Tick:**
   - `SELECT`: Chọn ô trống kế tiếp theo thứ tự quét hàng-cột.
   - `ASSIGN`: Gán giá trị hợp lệ vào ô trống. $\rightarrow$ Kèm `api_action: {"type": "move", "x": r, "y": c, "value": v}`.
@@ -144,7 +144,7 @@ Sau khi giải xong, hàm `solve()` trả về đối tượng `SolveResult` ch�
 - Thread gọi hàm `_advance_locked()` lặp lại theo chu kỳ $T = \frac{1}{\text{speed}}$ giây.
 - Sử dụng `threading.Lock` dung hòa truy cập giữa `next`, `previous`, và `auto_start` để loại bỏ hoàn toàn race condition.
 - **Pause an toàn:** Phương thức `pause()` kích hoạt `_stop_event.set()` và thực hiện `join(timeout=3)` dạng blocking join, bảo đảm index không bị nhảy sau khi trả về response.
-- **Ưu điểm:** Auto Run hoàn toàn không phụ thuộc vào `setInterval` hay `setTimeout` của JavaScript, giúp quá trình giải **không bao giờ bị gián đoạn hay throttle khi người dùng chuyển sang tab khác**.
+- **Ưu điểm:** Vòng lặp tăng tick không phụ thuộc vào `setInterval` hay `setTimeout` của JavaScript. Vì vậy browser throttle tab nền không làm dừng solver; frontend chỉ polling `/api/session` để hiển thị state mới nhất.
 
 ---
 

@@ -25,11 +25,10 @@ Hệ thống được thiết kế phân tách hoàn toàn thành 2 tiến trìn
 └───────────────────────────▲─────────────────────────────┘
                             │
                             │ HTTP/1.1 REST API v1 (JSON Payload)
-                            │ GET  /api/v1/game/state
-                            │ POST /api/v1/game/move
-                            │ POST /api/v1/game/clear
-                            │ POST /api/v1/game/reset
-                            │ PUT  /api/v1/game/state
+                            │ 10 route REST API v1
+                            │ GET  health/state/status/puzzles
+                            │ POST move/clear/reset/load/new
+                            │ PUT  game/state
                             │
 ┌───────────────────────────▼─────────────────────────────┐
 │                    PROGRAM B (:8001)                    │
@@ -110,7 +109,7 @@ Giao diện được xây dựng bằng HTML5 semantic, CSS Grid và Vanilla Jav
         (Vẽ lại Board)       (Giữ Focus/Con trỏ)
 ```
 
-1. **DOM Diffing qua `stateKey`:** Tránh hủy và vẽ lại DOM mỗi 350ms khi bàn cờ không đổi. Điều này giúp người chơi không bao giờ bị mất dấu con trỏ chuột hoặc mất focus khi đang nhập số.
+1. **DOM Diffing qua `stateKey`:** Tránh hủy và vẽ lại DOM mỗi 350ms khi bàn cờ không đổi, nhờ đó giữ focus trong các chu kỳ polling không có thay đổi. Khi board thực sự thay đổi, giao diện render lại để phản ánh state mới.
 2. **Generation Counter chống Race Condition mạng:** Mỗi chu kỳ Polling tăng biến thế hệ `pollGeneration`. Khi response trả về, hệ thống kiểm tra nếu thế hệ response đã cũ hơn thế hệ hiện tại thì bỏ qua, tránh tình trạng response cũ ghi đè dữ liệu mới.
 
 ---
@@ -139,7 +138,7 @@ Hệ thống đã vượt qua quy trình kiểm thử 2 lớp nghiêm ngặt:
 | Nhóm Kiểm Thử | Số Lượng | Trọng Tâm Xác Minh |
 |---|:---:|---|
 | `TestFixedCellIsProtected` | 6 | Ngăn chặn `move`, `clear` trên ô đề bài; giữ nguyên giá trị sau lỗi. |
-| `TestConflictingMoveIsAcceptedAndReported` | 4 | Chấp nhận move xung đột; kiểm tra danh sách tọa độ conflict; giải phóng khi xóa. |
+| `TestConflictingMoveIsAcceptedAndReported` | 8 | Chấp nhận move xung đột; kiểm tra danh sách tọa độ conflict; trạng thái bền vững và giải phóng khi xóa. |
 | `TestReplacePreservesFixedCells` | 5 | Từ chối snapshot sửa đổi ô fixed; đảm bảo tính toàn vẹn dữ liệu. |
 | `TestReplaceAllowsConflicts` | 5 | Chấp nhận snapshot chứa xung đột ở ô editable; xác nhận `SOLVED` khi giải đúng. |
 | `TestInvalidCoordinatesAndValues` | 27 | Kiểm tra tọa độ âm, tọa độ $>8$, giá trị float, string, bool, None, giá trị $>9$. |
@@ -147,7 +146,7 @@ Hệ thống đã vượt qua quy trình kiểm thử 2 lớp nghiêm ngặt:
 
 ```powershell
 python -m unittest tests.test_game -v
-# Kết quả: Ran 67 tests in 0.017s — OK
+# Kết quả xác minh ngày 01/09/2026: Ran 67 tests — OK
 ```
 
 ### 5.2. HTTP Smoke Tests (`A-sudoku-game/test_api.py`) — **43/43 PASSED**
@@ -168,10 +167,10 @@ python A-sudoku-game/test_api.py
 | Hạng mục | File / Vị trí | Mô tả |
 |---|---|---|
 | **Domain Logic** | `A-sudoku-game/game.py` | Quản lý board, fixed mask, conflict detection, thread-safe |
-| **REST API Adapter** | `A-sudoku-game/app.py` | HTTP server + routing 8 endpoints REST API v1 |
+| **REST API Adapter** | `A-sudoku-game/app.py` | HTTP server + routing 10 endpoints REST API v1 |
 | **Frontend UI Engine** | `A-sudoku-game/static/` | Giao diện Sudoku, polling 350ms, DOM diffing |
 | **Đặc tả Game** | `A-sudoku-game/GAME_SPECIFICATION.md` | Luật game, fixed cell, conflict acceptance |
-| **Đặc tả API** | `A-sudoku-game/API_SPECIFICATION.md` | Đặc tả chi tiết 8 REST API endpoints v1 |
+| **Đặc tả API** | `A-sudoku-game/API_SPECIFICATION.md` | Đặc tả chi tiết 10 REST API endpoints v1 |
 | **Báo cáo Kỹ thuật** | `A-sudoku-game/TECHNICAL_REPORT.md` | Báo cáo kiến trúc, đa luồng, kết quả kiểm thử |
 | **Launchers** | `A-sudoku-game/START_A.py`, `START_ALL.py` | Bộ script khởi động nhanh hệ thống |
 | **Unit Tests** | `tests/test_game.py` | 67 automated unit tests |

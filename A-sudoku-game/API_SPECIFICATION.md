@@ -43,17 +43,19 @@ Ma trận bàn cờ Sudoku 9×9:
 
 ---
 
-## 3. Bảng Tổng Hợp 8 Endpoints REST API v1
+## 3. Bảng Tổng Hợp 10 Endpoints REST API v1
 
 | Method | Endpoint | Request Body | HTTP Status | Mô tả nghiệp vụ |
 |---|---|---|:---:|---|
 | `GET` | `/health` | Không | 200 | Kiểm tra trạng thái hoạt động của Game Service A. |
 | `GET` | `/game/state` | Không | 200 | Lấy toàn bộ trạng thái hiện tại (board, fixed, fixed_mask, conflicts, status). |
 | `GET` | `/game/status` | Không | 200 | Lấy trạng thái rút gọn (status, empty_cells, conflict_count). |
+| `GET` | `/puzzles` | Không | 200 | Lấy danh mục tóm tắt 40 puzzle, nhóm theo bốn mức độ khó. |
 | `POST` | `/game/move` | `{"x": int, "y": int, "num": int}` | 200 / 400 | Điền một giá trị vào ô editable; chấp nhận move xung đột. |
 | `POST` | `/game/clear` | `{"x": int, "y": int}` | 200 / 400 | Xóa một ô editable về giá trị 0. Chặn xóa ô fixed. |
 | `POST` | `/game/reset` | `{}` hoặc Không | 200 | Khôi phục toàn bộ editable cells về 0 theo đề bài gốc. |
 | `POST` | `/game/load` | `{"test_id": str, "difficulty": str, "board": int[9][9]}` | 200 / 400 | Nạp puzzle mới, tính lại fixed mask và sinh game_id mới. |
+| `POST` | `/game/new` | `{"difficulty": str}` | 200 / 400 | Chọn ngẫu nhiên một puzzle trong dataset theo mức độ khó. |
 | `PUT` | `/game/state` | `{"board": int[9][9]}` | 200 / 400 | Đồng bộ toàn bộ ma trận editable từ snapshot của Solver B. |
 
 ---
@@ -143,7 +145,16 @@ Lấy thông tin trạng thái rút gọn (dùng để kiểm tra nhanh tiến t
 
 ---
 
-### 4.4. `POST /game/move`
+### 4.4. `GET /puzzles`
+Trả về danh mục tóm tắt của dataset dùng chung, không gửi toàn bộ ma trận để giảm payload.
+
+- **Request:** Không có body.
+- **Response 200 (OK):** Gồm `success`, `total`, `difficulties`, `puzzles` nhóm theo `easy`, `medium`, `hard`, `expert`, và `dataset_loaded`.
+- Mỗi phần tử tóm tắt gồm `index`, `id`, `difficulty` và số lượng `clues`.
+
+---
+
+### 4.5. `POST /game/move`
 Gán một giá trị vào ô editable $(x, y)$. Hỗ trợ cả key `num` và `value`.
 
 - **Request Body:**
@@ -188,7 +199,7 @@ Gán một giá trị vào ô editable $(x, y)$. Hỗ trợ cả key `num` và `
 
 ---
 
-### 4.5. `POST /game/clear`
+### 4.6. `POST /game/clear`
 Xóa một ô editable về giá trị 0 (được gọi khi solver Backtrack hoặc người chơi xóa ô).
 
 - **Request Body:**
@@ -218,7 +229,7 @@ Xóa một ô editable về giá trị 0 (được gọi khi solver Backtrack ho
 
 ---
 
-### 4.6. `POST /game/reset`
+### 4.7. `POST /game/reset`
 Khôi phục toàn bộ bàn cờ về puzzle ban đầu (xóa sạch toàn bộ các ô editable đã điền).
 
 - **Request Body:** `{}` hoặc rỗng.
@@ -226,7 +237,7 @@ Khôi phục toàn bộ bàn cờ về puzzle ban đầu (xóa sạch toàn bộ
 
 ---
 
-### 4.7. `POST /game/load`
+### 4.8. `POST /game/load`
 Nạp một puzzle Sudoku mới vào trò chơi. Hệ thống sẽ tính lại fixed mask và sinh `game_id` mới. Hỗ trợ cả key `test_id` và `id`.
 
 - **Request Body:**
@@ -252,7 +263,16 @@ Nạp một puzzle Sudoku mới vào trò chơi. Hệ thống sẽ tính lại f
 
 ---
 
-### 4.8. `PUT /game/state`
+### 4.9. `POST /game/new`
+Chọn ngẫu nhiên một puzzle từ `B-auto-solver/dataset/puzzles.json` theo mức độ khó yêu cầu, sau đó gọi cùng domain operation như `/game/load`.
+
+- **Request Body:** `{"difficulty": "easy" | "medium" | "hard" | "expert"}`. Có thể bỏ trống `difficulty` để chọn trong toàn bộ dataset.
+- **Response 200 (OK):** Trả về Full State mới, gồm `test_id`, `difficulty`, `board`, `fixed`, `status` và `game_id` mới.
+- **Response 400:** `INVALID_BOARD` nếu difficulty không hợp lệ, dataset không tồn tại hoặc không có puzzle phù hợp.
+
+---
+
+### 4.10. `PUT /game/state`
 Đồng bộ toàn bộ ma trận bàn cờ từ snapshot của Solver B (dùng cho thuật toán Min-Conflicts khi thay đổi nhiều ô cùng lúc hoặc khi rollback bằng Previous).
 
 - **Request Body:**
