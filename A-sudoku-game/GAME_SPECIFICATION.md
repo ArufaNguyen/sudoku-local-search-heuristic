@@ -12,7 +12,7 @@ Program A là một ứng dụng độc lập chạy tại cổng `8000`, chịu
 
 1. **Quản lý dữ liệu và trạng thái bàn cờ Sudoku 9×9:** Quản lý fixed mask, phát hiện xung đột (conflict detection), đếm ô trống và cập nhật trạng thái vòng đời trò chơi.
 2. **Bảo vệ tính toàn vẹn của bài toán (Fixed Cell Integrity):** Ngăn chặn mọi hành vi thay đổi hoặc xóa các ô đề bài ban đầu (fixed cells).
-3. **Cung cấp REST API v1:** Cho phép Program B (Auto Solver / Visualizer) điều khiển bàn cờ hoàn toàn thông qua giao thức HTTP JSON.
+3. **Cung cấp REST API v1:** Công bố 10 route cho health, state, status, dataset và các mutation; cho phép Program B điều khiển bàn cờ hoàn toàn qua HTTP JSON.
 4. **Giao diện Web tương tác (Frontend):** Hiển thị trực quan bàn cờ thời gian thực, hỗ trợ người chơi tương tác thủ công và tự động đồng bộ khi Solver B thực hiện giải thuật.
 
 > [!IMPORTANT]

@@ -42,7 +42,7 @@ python A-sudoku-game/test_api.py
 | Nhóm Test Class | Số lượng | Trọng tâm kiểm tra |
 |---|:---:|---|
 | `TestFixedCellIsProtected` | 6 | Ngăn chặn `move` và `clear` trên ô đề bài cố định; giữ nguyên giá trị ô sau khi ném lỗi `FIXED_CELL`. |
-| `TestConflictingMoveIsAcceptedAndReported` | 4 | Chấp nhận move gây xung đột ở ô editable; cập nhật danh sách `conflicts` và đổi trạng thái thành `CONFLICT`. |
+| `TestConflictingMoveIsAcceptedAndReported` | 8 | Chấp nhận move gây xung đột ở ô editable; cập nhật danh sách `conflicts`, duy trì state và xóa conflict đúng cách. |
 | `TestReplacePreservesFixedCells` | 5 | Từ chối các snapshot `replace` cố tình thay đổi giá trị của bất kỳ ô fixed nào; bảo vệ tính bất biến của đề bài. |
 | `TestReplaceAllowsConflicts` | 5 | Chấp nhận snapshot chứa xung đột ở ô editable (cho Min-Conflicts); xác nhận chuyển sang `SOLVED` khi nạp snapshot đúng hoàn toàn. |
 | `TestInvalidCoordinatesAndValues` | 27 | Kiểm tra toàn diện tọa độ âm, tọa độ $>8$, kiểu float, chuỗi, boolean, None, giá trị ngoài khoảng $1..9$. |
@@ -50,54 +50,60 @@ python A-sudoku-game/test_api.py
 
 ---
 
-### 3.2. Thuật Toán & Tick Recorder Tests (`B-auto-solver/solvers.py`)
+### 3.2. Thuật Toán & Tick Recorder Tests (`tests/test_solvers.py` — 7 Tests)
 
 | Tên Test Case | Mục đích kiểm tra |
 |---|---|
-| `test_candidates_valid_domain` | Hàm `candidates(board, r, c)` trả về chính xác tập giá trị hợp lệ $1..9$ không trùng hàng, cột, khối. Trả về `[]` nếu ô đã có số. |
+| `test_candidates` | Hàm `candidates(board, r, c)` trả về chính xác tập giá trị hợp lệ $1..9$ không trùng hàng, cột, khối. Trả về `[]` nếu ô đã có số. |
 | `test_count_conflicts_and_is_solved` | Hàm `count_conflicts()` đếm đúng số vi phạm; `is_solved()` trả về `True` khi và chỉ khi bàn cờ đầy và 0 xung đột. |
-| `test_backtracking_correctness` | Backtracking giải chính xác các puzzle mẫu; bàn cờ kết quả thỏa mãn mọi ràng buộc Sudoku. |
-| `test_mrv_heuristic_superiority` | MRV giải đúng puzzle và số node duyệt thỏa mãn $\text{nodes}(MRV) \le \text{nodes}(BT)$ trên mọi bài toán kiểm tra. |
+| `test_backtracking_solves_correctly` | Backtracking giải chính xác puzzle mẫu; bàn cờ kết quả thỏa mãn mọi ràng buộc Sudoku. |
+| `test_mrv_solves_correctly_and_explores_fewer_or_equal_nodes` | MRV giải đúng puzzle kiểm tra và số node duyệt thỏa mãn $\text{nodes}(MRV) \le \text{nodes}(BT)$ trên cùng puzzle đó. |
 | `test_min_conflicts_solves_sample` | Min-Conflicts giải thành công puzzle Easy với seed cố định trong ngân sách 1,000 iterations $\times$ 50 restarts. |
-| `test_tick_snapshot_consistency` | Với mọi tick sinh ra có `api_action`, trạng thái bàn cờ sau khi áp dụng action khớp hoàn toàn với `tick.board`. |
+| `test_tick_consistency_and_api_action` | Với mọi tick sinh ra có `api_action`, trạng thái bàn cờ sau khi áp dụng action khớp hoàn toàn với `tick.board`. |
 | `test_record_ticks_flag` | Khi `record_ticks=False` (chạy benchmark), `ticks` rỗng để tiết kiệm bộ nhớ; khi `record_ticks=True` (visualizer), thu thập đầy đủ các bước. |
 
 ---
 
-### 3.3. REST Client & Integration Tests (`B-auto-solver/client.py`)
+### 3.3. REST Client Tests (`tests/test_client.py` — 27 Tests)
 
-| Tên Test Case | Mục đích kiểm tra |
+Các test dùng mock HTTP server A để kiểm tra hợp đồng REST một cách cách ly, bao gồm các nhóm sau:
+
+| Nhóm hành vi được kiểm tra | Mục đích kiểm tra |
 |---|---|
-| `test_health_endpoint` | `client.health()` trả về `{"success": true, "service": "sudoku-game"}` khi server A đang chạy. |
-| `test_get_state_and_fixed_mask` | `client.get_state()` trả về đúng ma trận `board`, `fixed`, `fixed_mask`, `status`, `empty_cells`, `conflicts`. |
-| `test_move_and_clear_integration` | `client.move()` và `client.clear()` cập nhật dữ liệu trên Program A thời gian thực. |
-| `test_replace_snapshot_integration` | `client.replace()` gửi toàn bộ snapshot ma trận bàn cờ sang A thành công. |
-| `test_error_handling_api_error` | Bắt đúng `APIError` khi gửi tọa độ hoặc giá trị sai quy cách; trích xuất chính xác mã lỗi HTTP 400 (`FIXED_CELL`, `INVALID_VALUE`, ...). |
-| `test_connection_error_resilience` | Bắt đúng `ConnectionError` khi Program A chưa chạy; Program B không bị crash đột ngột. |
+| Health và availability | `health()`/`is_alive()` trả đúng kết quả khi mock A online và khi không có server. |
+| State và fixed mask | `get_state()` trả đúng cấu trúc, board 9×9, miền giá trị và fixed mask. |
+| Move và clear | Kiểm tra editable/fixed cell, conflict, tọa độ và giá trị không hợp lệ. |
+| Reset, load và replace | Khôi phục state, nạp puzzle, thay editable cells và chặn thay clue. |
+| Lỗi HTTP/domain | Chuyển response lỗi của A thành `APIError` với mã `FIXED_CELL`, `INVALID_VALUE`, `INVALID_BOARD`, ... |
+| Lỗi kết nối | Ném `ClientConnectionError` hoặc trả `False` an toàn khi Program A chưa chạy. |
 
 ---
 
-### 3.4. Backend AutoRunner & State Machine Tests (`B-auto-solver/app.py`)
+### 3.4. Backend AutoRunner & State Machine Tests (`tests/test_backend_autorun.py` — 13 Tests)
 
-| Tên Test Case | Mục đích kiểm tra |
+| Nhóm hành vi được kiểm tra | Mục đích kiểm tra |
 |---|---|
-| `test_session_lifecycle` | Vòng đời session: `prepare` tạo session mới $\rightarrow$ `next` tăng index $\rightarrow$ `previous` giảm index $\rightarrow$ `reset` xóa session. |
-| `test_autorunner_background_execution` | `AutoRunner` chạy trên backend thread độc lập; chỉ số tick tự động tăng theo tốc độ được cấu hình. |
-| `test_autorunner_blocking_pause` | Khi gọi `pause()`, thread dừng ngay lập tức và index được đóng băng hoàn toàn. |
-| `test_thread_lock_safety` | Các thao tác `next`, `previous`, và `auto_start` sử dụng chung `threading.Lock` để loại trừ race condition. |
+| Health và prepare | Kiểm tra B health; tạo session Backtracking/MRV có tick và thay thế session cũ. |
+| Next và Previous | Kiểm tra tăng/giảm index, hành vi tại đầu/cuối lịch sử tick. |
+| Auto chạy nền | Xác nhận index tự tăng khi không có request frontend và tốc độ worker được áp dụng. |
+| Pause và Reset | Pause đóng băng index; Reset xóa session và dừng worker đang chạy. |
 
 ---
 
-### 3.5. Dataset Integrity Tests (`B-auto-solver/dataset/puzzles.json`)
+### 3.5. Dataset Integrity Tests (`tests/test_dataset.py` — 11 Tests)
 
 | Tên Test Case | Tiêu chuẩn kiểm tra |
 |---|---|
-| `test_total_puzzle_count` | File dataset chứa chính xác **40 puzzle**. |
-| `test_difficulty_distribution` | Phân bổ chính xác **10 puzzle cho mỗi mức** (Easy, Medium, Hard, Expert). |
-| `test_clue_distribution` | Số lượng clue cố định đúng chuẩn: Easy=46, Medium=38, Hard=32, Expert=27. |
-| `test_solution_validity` | Toàn bộ 40 solution đi kèm đều là nghiệm Sudoku hoàn chỉnh và hợp lệ (`is_solved() == True`). |
-| `test_single_unique_solution` | Mỗi puzzle kiểm tra có đúng **1 nghiệm duy nhất** (`count_solutions(board, limit=2) == 1`). |
-| `test_puzzle_uniqueness` | Không có 2 puzzle nào bị trùng lặp trong toàn bộ tập dữ liệu 40 bài. |
+| `test_total_count_is_40` | File dataset chứa chính xác **40 puzzle**. |
+| `test_distribution_per_level` | Phân bổ chính xác **10 puzzle cho mỗi mức** (Easy, Medium, Hard, Expert). |
+| `test_clue_count_matches_spec` | Số lượng clue cố định đúng chuẩn: Easy=46, Medium=38, Hard=32, Expert=27. |
+| `test_solution_is_valid_for_all_puzzles` | Toàn bộ 40 solution đi kèm đều là nghiệm Sudoku hoàn chỉnh và hợp lệ (`is_solved() == True`). |
+| `test_sampled_puzzles_have_unique_solution` | Lấy 2 puzzle mỗi mức (8 puzzle) và xác nhận đúng **1 nghiệm duy nhất** bằng `count_solutions(board, limit=2) == 1`; pipeline benchmark còn kiểm tra uniqueness cho đủ 40 puzzle. |
+| `test_no_duplicate_puzzles` | Không có 2 puzzle nào bị trùng lặp trong toàn bộ tập dữ liệu 40 bài. |
+
+### 3.6. Benchmark Pipeline Tests (`tests/test_benchmark.py` — 14 Tests)
+
+Bao phủ validation dataset, kết quả chạy rút gọn, phép aggregate và schema của năm file CSV: `results_raw.csv`, `results_summary.csv`, `heuristic_effectiveness.csv`, `local_search_comparison.csv`, `complexity_trend.csv`.
 
 ---
 
@@ -106,11 +112,11 @@ python A-sudoku-game/test_api.py
 ```powershell
 # Chạy Unit Tests
 python -m unittest discover -s tests -v
-# Output: Ran 67 tests in 0.017s — OK (100% PASSED)
+# Output xác minh ngày 01/09/2026: Ran 139 tests — OK (100% PASSED)
 
 # Chạy Smoke Tests API
 python A-sudoku-game/test_api.py
 # Output: 43 PASSED | 0 FAILED (100% PASSED)
 ```
 
-**Tổng kết:** Cả hai bộ kiểm thử với **110 bài test tự động** đều vượt qua xuất sắc, khẳng định toàn bộ hệ thống sẵn sàng cho thực nghiệm benchmark và thuyết trình.
+**Tổng kết xác minh ngày 01/09/2026:** Bộ `unittest discover` có **139 test** và đạt 139/139. Ngoài suite này, script HTTP smoke test đạt riêng **43/43** trên một Program A thật chạy ở cổng cách ly; các request không tác động vào phiên A đang mở của người dùng.
